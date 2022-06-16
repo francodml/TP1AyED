@@ -98,7 +98,7 @@ int main(){
     ifstream VentasAF("VentasFerreteria.txt");
 
     ProcesarVentas(VentasAF, vrVentas, nTotalVentas);
-    
+
     cout << "Listado de ventas" << endl;
 
     OrdenarVentas(vrVentas, nTotalVentas);
