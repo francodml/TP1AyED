@@ -10,7 +10,7 @@
 #include <iomanip>
 #include <fstream>
 #include <iostream>
-#include <format>
+
 using namespace std;
 
 typedef char str20[21];
@@ -98,9 +98,7 @@ int main(){
     ifstream VentasAF("VentasFerreteria.txt");
 
     ProcesarVentas(VentasAF, vrVentas, nTotalVentas);
-
-    cout << vrVentas[0].descrip << "sexo";
-
+    
     cout << "Listado de ventas" << endl;
 
     OrdenarVentas(vrVentas, nTotalVentas);
