@@ -84,8 +84,6 @@ void OrdxBur(sVenta vrVentas[], unsigned short cVtas)
     }
 }
 
-
-
 void EmitirVenta(sVenta Venta){
     cout << setw(5)  << Venta.cant << " ";
     cout << setw(21) << Venta.descrip << " ";
