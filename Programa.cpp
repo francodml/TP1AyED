@@ -36,43 +36,55 @@ bool LeerVenta(ifstream &Vtas, sVenta & rVen) {
     Vtas >> rVen.codVen;
     if (!rVen.codVen)
         return false;
-    Vtas >> rVen.cant;
-    Vtas.ignore();
-    Vtas.get(rVen.descrip, 21);
-    Vtas >> rVen.preUni;
-    Vtas >> rVen.fecha.dia;
-    Vtas >> rVen.fecha.mes;
-    Vtas >> rVen.fecha.anio;
+    try {
+        Vtas >> rVen.cant;
+        Vtas.ignore();
+        Vtas.get(rVen.descrip, 21);
+        Vtas >> rVen.preUni;
+        Vtas >> rVen.fecha.dia;
+        Vtas >> rVen.fecha.mes;
+        Vtas >> rVen.fecha.anio;
+    } catch (...) {
+        return false;
+        cout << "Error en lectura de archivo" << endl;
+    }
 
     return true;
 }
 
-void ProcesarVentas(ifstream &VentasIFS, sVenta vrVentas[], unsigned short &nTotalVentas )
+void ProcesarVentas(ifstream &VentasIFS, sVenta vrVentas[], unsigned short &cVtas )
 {
     while(VentasIFS){
-        if(!LeerVenta(VentasIFS, vrVentas[nTotalVentas]))
+        if(!LeerVenta(VentasIFS, vrVentas[cVtas]))
             break;
-        nTotalVentas++;
+        cVtas++;
     }
 }
 
-//Ordenar ventas por codigo de vendedor
-void OrdenarVentas( sVenta vrVentas[], unsigned short nTotalVentas )
+void Intercambiar(sVenta &v1, sVenta &v2)
 {
     sVenta aux;
-    for(int i=0; i<nTotalVentas-1; i++)
+    aux = v1;
+    v1 = v2;
+    v2 = aux;
+}
+
+void OrdxBur(sVenta vrVentas[], unsigned short cVtas)
+{
+    unsigned short i, j;
+    for(i = 0; i < cVtas - 1; i++)
     {
-        for(int j=i+1; j<nTotalVentas; j++)
+        for(j = 0; j < cVtas - i - 1; j++)
         {
-            if(vrVentas[i].codVen > vrVentas[j].codVen)
+            if(vrVentas[j].codVen > vrVentas[j+1].codVen)
             {
-                aux = vrVentas[i];
-                vrVentas[i] = vrVentas[j];
-                vrVentas[j] = aux;
+                Intercambiar(vrVentas[j], vrVentas[j+1]);
             }
         }
     }
 }
+
+
 
 void EmitirVenta(sVenta Venta){
     cout << setw(5)  << Venta.cant << " ";
@@ -101,14 +113,14 @@ int main(){
 
     cout << "Listado de ventas" << endl;
 
-    OrdenarVentas(vrVentas, nTotalVentas);
+    OrdxBur(vrVentas, nTotalVentas);
        
     for ( int i = 0; i < nTotalVentas; i++)
     {
         if (vrVentas[i].codVen != vendedorActual)
         {
             vendedorActual = vrVentas[i].codVen;
-            VendedorVtaMayor = i;
+            //VendedorVtaMayor = i;
             cout << "Cod. Vendedor: " << vendedorActual << endl;
             EmitirColumnas();
         }
