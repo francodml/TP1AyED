@@ -74,24 +74,31 @@ void OrdxBur(sVenta vrVentas[], unsigned short cVtas)
     unsigned short i, j;
     for(i = 0; i < cVtas - 1; i++)
     {
+        bool ordenado = true;
+
         for(j = 0; j < cVtas - i - 1; j++)
         {
             if(vrVentas[j].codVen > vrVentas[j+1].codVen)
             {
+                ordenado = false;
                 Intercambiar(vrVentas[j], vrVentas[j+1]);
             }
+        }
+
+        if (ordenado)
+        {
+            cout << "Se hicieron " << i << " pasadas" << endl;
+            break;
         }
     }
 }
 
 void EmitirVenta(sVenta Venta){
     cout << setw(5)  << Venta.cant << " ";
-    cout << setw(21) << Venta.descrip << " ";
-    cout << setw(7)  << '$' << Venta.preUni  << " ";
-    cout << setw(8)  << '$' << Venta.preUni*Venta.cant << " ";
-    cout << setw(5)  << Venta.fecha.dia << "/";
-    cout << setw(2)  << Venta.fecha.mes << "/";
-    cout << setw(4)  << Venta.fecha.anio << endl;
+    cout << setw(20) << Venta.descrip << " ";
+    cout << setw(4)  << '$' << Venta.preUni  << " ";
+    cout << setw(4)  << '$' << Venta.preUni*Venta.cant << " ";
+    cout << setw(10)  << Venta.fecha.dia << "/" << Venta.fecha.mes << "/" << Venta.fecha.anio << endl;
 }
 
 void EmitirColumnas(){
