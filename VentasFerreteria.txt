@@ -3,7 +3,10 @@
 200   3 Espatula Ancha       23.21 10 01 1995
   1   1 Kit Dremel Minitorno900.00 20 09 1981
 999  56 tornillo             22.34 16 02 2000
-200   1 200kg Durlock        23.21 10 01 1995
+200   1 200kg Durlock       2005.21 10 01 1995
 658  27 arandela            999.56 25 05 1995
  27 184 precinto            129.99 30 08 1992
+ 44   1 Kit Destrn. Prec    215.20 13 09 1981
+  1  44 AireComp. 200cm3     15.50 20 09 1981
   1 999 Galletitas Oreo      15.50 20 09 1981
+100 999 Algo muy caro       100.99 15 08 2002
