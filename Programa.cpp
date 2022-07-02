@@ -182,7 +182,7 @@ void AcumularTotales(rTotales vrTotales[], ushort codVen, int totalItems, int to
 
 void ListadoVentasAgrupVen(ostream &sld, rVenta vrVentas[], ushort cVtas, rTotales vrTotales[], ushort &cTotales)
 {
-    ushort vendedorActual, nVentasVendedor, iTotales, codVenVentMayor;
+    ushort vendedorActual, nVentasVendedor, codVenVentMayor;
     float totalGeneral, vtaMayor = 0;
     double totalImporteCurVen;
     int totalItemsCurVen;
@@ -249,7 +249,7 @@ void ListadoImporteTotalxVend(ostream &sld, rTotales vrTot[], ushort cTotales) {
 
 int main(){
     float TotalGralVentas;
-    ushort VendedorVtaMayor, cVtas, cTotales;
+    ushort VendedorVtaMayor, cVtas = 0, cTotales = 0;
     rVenta vrVentas[MAX_REGS];
     rTotales vrTotales[MAX_VEND];
 
