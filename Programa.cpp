@@ -25,18 +25,27 @@ typedef char str20[21];
 
 typedef unsigned short ushort;
 
+const short MAX_REGS = 800;
+const short MAX_VEND = 100;
+
 struct sFecha {
     char dia[3],
         mes[3],
         anio[5];
 };
 
-struct sVenta {
+struct rVenta {
 	unsigned short codVen,
            cant;
 	str20  descrip; // cadena de caracteres al estilo Leng. C
 	float  preUni;
     sFecha fecha;
+};
+
+struct rTotales {
+    short id;
+    int itemsTotalVendido;
+    int importeTotalVendido;
 };
 
 string Replicate(char c, ushort n) {
@@ -47,7 +56,7 @@ string Replicate(char c, ushort n) {
     return str;
 }
 
-bool LeerVenta(ifstream &Vtas, sVenta & rVen) {
+bool LeerVenta(ifstream &Vtas, rVenta & rVen) {
     if (!Vtas)
         return false;
 
@@ -70,7 +79,7 @@ bool LeerVenta(ifstream &Vtas, sVenta & rVen) {
     return true;
 }
 
-void ProcesarVentas(ifstream &VentasIFS, sVenta vrVentas[], unsigned short &cVtas )
+void ProcesarVentas(ifstream &VentasIFS, rVenta vrVentas[], unsigned short &cVtas )
 {
     while(VentasIFS){
         if(!LeerVenta(VentasIFS, vrVentas[cVtas]))
@@ -79,40 +88,40 @@ void ProcesarVentas(ifstream &VentasIFS, sVenta vrVentas[], unsigned short &cVta
     }
 }
 
-void Intercambiar(sVenta &v1, sVenta &v2)
+void Intercambiar(rVenta &v1, rVenta &v2, bool &sorted)
 {
-    sVenta aux;
+    rVenta aux;
     aux = v1;
     v1 = v2;
     v2 = aux;
+    sorted = false;
 }
 
-void OrdxBur(sVenta vrVentas[], unsigned short cVtas)
+template <class T>
+
+//Ordenado por Burbuja genérico. asc indica si el ordenamiento es ascendente o descendente. *cmp indica la función de comparación.
+
+void OrdxBurGenerico(T array[], ushort n, bool (*cmp)(T, T))
 {
-    unsigned short i, j;
-    for(i = 0; i < cVtas - 1; i++)
+    for (ushort i = 0; i < n - 1; i++)
     {
-        bool ordenado = true;
+        bool sorted = true;
+        for (ushort j = 0; j < n - i - 1; j++)
+            if (cmp(array[j], array[j + 1]))
+                Intercambiar(array[j], array[j + 1], sorted);
 
-        for(j = 0; j < cVtas - i - 1; j++)
-        {
-            if(vrVentas[j].codVen > vrVentas[j+1].codVen)
-            {
-                ordenado = false;
-                Intercambiar(vrVentas[j], vrVentas[j+1]);
-            }
-        }
-
-        if (ordenado)
-        {
-            cout << "Se hicieron " << i << " pasadas" << endl;
+        if (sorted)
             break;
-        }
     }
 }
 
+void OrdxBur(rVenta vrVentas[], ushort cVtas) {
+    OrdxBurGenerico<rVenta>(vrVentas, cVtas, [](rVenta v1, rVenta v2) {
+        return v1.codVen > v2.codVen;
+    });
+}
 
-void EmitirVenta(sVenta Venta, ushort i){
+void EmitirVenta(rVenta Venta, ushort i){
     cout << setw(5) << i << " ";
     cout << setw(3) << Venta.fecha.dia << "/" << setw(2) << Venta.fecha.mes << "/" << setw(4) << Venta.fecha.anio << " ";
     cout << setw(6)  << Venta.cant << " ";
@@ -133,7 +142,7 @@ void EmitirColumnas(){
         << endl;
 }
 
-void ListadoVentasxCodVen(sVenta vrVentas[], ushort cVtas)
+void ListadoVentasAgrupVen(rVenta vrVentas[], ushort cVtas, rTotales vrTotales[])
 {
     ushort vendedorActual, nVentasVendedor;
     float totalVendedor;
@@ -158,22 +167,28 @@ void ListadoVentasxCodVen(sVenta vrVentas[], ushort cVtas)
         totalVendedor += vrVentas[i].preUni * vrVentas[i].cant;
         EmitirVenta(vrVentas[i], nVentasVendedor);
         if (vrVentas[i+1].codVen != vendedorActual)
+        {
             cout << setw(74) << "$" << setw(9) << totalVendedor << endl;
+            rTotales rTotalesAux;
+            rTotalesAux.id = vendedorActual;
+            rTotalesAux.itemsTotalVendido = nVentasVendedor;
+            rTotalesAux.importeTotalVendido = totalVendedor;
+            vrTotales[vendedorActual] = rTotalesAux;
+        }
     }
 }
 
 int main(){
-    const short MAX_REGS = 800;
-    const short MAX_VEND = 100;
     float TotalGralVentas;
     ushort VendedorVtaMayor, nTotalVentas;
-    sVenta vrVentas[MAX_REGS];
+    rVenta vrVentas[MAX_REGS];
+    rTotales vrTotales[MAX_VEND];
 
     ifstream VentasAF("VentasFerreteria.txt");
 
     ProcesarVentas(VentasAF, vrVentas, nTotalVentas);
 
-    ListadoVentasxCodVen(vrVentas, nTotalVentas);
+    ListadoVentasAgrupVen(vrVentas, nTotalVentas, vrTotales);
 
     //ofstream SalidaAF("SalidaFerreteria.txt");
 
