@@ -1,5 +1,8 @@
 .vscode
+otherprograms/
+
 *.exe
 *.obj
 *.pdb
 *.ilk
+*.tds
