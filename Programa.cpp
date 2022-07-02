@@ -18,6 +18,7 @@
 #include <iomanip>
 #include <fstream>
 #include <iostream>
+#include <locale.h>
 
 using namespace std;
 
@@ -35,17 +36,19 @@ struct sFecha {
 };
 
 struct rVenta {
+	float  preUni;
+    float  preTotal;
 	unsigned short codVen,
            cant;
-	str20  descrip; // cadena de caracteres al estilo Leng. C
-	float  preUni;
     sFecha fecha;
+	str20  descrip; // cadena de caracteres al estilo Leng. C
 };
 
 struct rTotales {
     short id;
     int itemsTotalVendido;
     int importeTotalVendido;
+    int importeVentaMayor;
 };
 
 string Replicate(char c, ushort n) {
@@ -71,9 +74,10 @@ bool LeerVenta(ifstream &Vtas, rVenta & rVen) {
         Vtas >> rVen.fecha.dia;
         Vtas >> rVen.fecha.mes;
         Vtas >> rVen.fecha.anio;
+        rVen.preTotal = rVen.preUni * rVen.cant;
     } catch (...) {
-        return false;
         cout << "Error en lectura de archivo" << endl;
+        return false;
     }
 
     return true;
@@ -88,9 +92,13 @@ void ProcesarVentas(ifstream &VentasIFS, rVenta vrVentas[], unsigned short &cVta
     }
 }
 
-void Intercambiar(rVenta &v1, rVenta &v2, bool &sorted)
+//Intercambio genérico - No utiliza tipos definidos.
+
+template <class T>
+
+void Intercambiar( T &v1, T &v2, bool &sorted)
 {
-    rVenta aux;
+    T aux;
     aux = v1;
     v1 = v2;
     v2 = aux;
@@ -99,15 +107,15 @@ void Intercambiar(rVenta &v1, rVenta &v2, bool &sorted)
 
 template <class T>
 
-//Ordenado por Burbuja genérico. asc indica si el ordenamiento es ascendente o descendente. *cmp indica la función de comparación.
+//Ordenado por Burbuja genérico. *Comparar indica la función de comparación.
 
-void OrdxBurGenerico(T array[], ushort n, bool (*cmp)(T, T))
+void OrdxBurGenerico(T array[], ushort n, bool (*Comparar)(T, T))
 {
     for (ushort i = 0; i < n - 1; i++)
     {
         bool sorted = true;
         for (ushort j = 0; j < n - i - 1; j++)
-            if (cmp(array[j], array[j + 1]))
+            if (Comparar(array[j], array[j + 1]))
                 Intercambiar(array[j], array[j + 1], sorted);
 
         if (sorted)
@@ -115,41 +123,72 @@ void OrdxBurGenerico(T array[], ushort n, bool (*cmp)(T, T))
     }
 }
 
-void OrdxBur(rVenta vrVentas[], ushort cVtas) {
-    OrdxBurGenerico<rVenta>(vrVentas, cVtas, [](rVenta v1, rVenta v2) {
+#pragma region Comparadores
+    bool ComparVentas(rVenta v1, rVenta v2) {
         return v1.codVen > v2.codVen;
-    });
+    }
+
+    bool ComparTotalesItems(rTotales v1, rTotales v2) {
+        return v1.itemsTotalVendido < v2.itemsTotalVendido;
+    }
+
+    bool ComparTotalesImportes(rTotales v1, rTotales v2) {
+        return v1.importeTotalVendido < v2.importeTotalVendido;
+    }
+#pragma endregion
+
+
+void OrdxBur(rVenta vrVentas[], ushort cVtas) {
+    OrdxBurGenerico<rVenta>(vrVentas, cVtas, *ComparVentas);
 }
 
-void EmitirVenta(rVenta Venta, ushort i){
-    cout << setw(5) << i << " ";
-    cout << setw(3) << Venta.fecha.dia << "/" << setw(2) << Venta.fecha.mes << "/" << setw(4) << Venta.fecha.anio << " ";
-    cout << setw(6)  << Venta.cant << " ";
-    cout << setw(20) << Venta.descrip << " ";
-    cout << setw(3) << "$" << setw(8) << Venta.preUni  << " ";
-    cout << setw(3) << "$" << setw(9) << Venta.preUni*Venta.cant  << " ";
-    cout << endl;
+void OrdxBur(rTotales vrTotales[], ushort cTotales) {
+    OrdxBurGenerico<rTotales>(vrTotales, cTotales, *ComparTotalesItems);
 }
 
-void EmitirColumnas(){
-    cout << setw(5) << "#Item" << " "
-        << right << setw(4) << "Dia" << "/" << setw(2) << "Mes" << "/" << setw(4) << "Año" << " "
+void OrdxBur(ushort cTotales, rTotales vrTotales[]) {
+    OrdxBurGenerico<rTotales>(vrTotales, cTotales, *ComparTotalesImportes);
+}
+
+void EmitirVenta(ostream &sld, rVenta Venta, ushort i){
+    sld << setw(5) << i << " "
+         << setw(4) << Venta.fecha.dia << "/" << setw(2) << Venta.fecha.mes << "/" << setw(4) << Venta.fecha.anio << " "
+         << setw(6)  << Venta.cant << " "
+         << setw(20) << Venta.descrip << " "
+         << setw(3) << "$" << setw(8) << Venta.preUni  << " "
+         << setw(3) << "$" << setw(9) << Venta.preUni*Venta.cant  << " "
+         << endl;
+}
+
+void EmitirColumnas(ostream &sld){
+    sld << setw(5) << "#Item" << " "
+        << right << setw(13) << "Dia/Mes/Anio" << " "
         << setw(5) << "Cant" << " "
-        << left << setw(21) << "Descripción" << " "
-        << right << setw(11) << "Precio" << " "
+        << left << setw(21) << "Descripcion" << " "
+        << right << setw(10) << "Precio" << " "
         << right << setw(12) << "Total" << " "
         << right << setw(12) << "Total Ven." << " "
         << endl;
 }
 
-void ListadoVentasAgrupVen(rVenta vrVentas[], ushort cVtas, rTotales vrTotales[])
+void AcumularTotales(rTotales vrTotales[], ushort codVen, int totalItems, int totalImporte, ushort &cTotales) {
+    rTotales rTotalesAux;
+    rTotalesAux.id = codVen;
+    rTotalesAux.itemsTotalVendido = totalItems;
+    rTotalesAux.importeTotalVendido = totalImporte;
+    vrTotales[cTotales] = rTotalesAux;
+    cTotales++;
+}
+
+void ListadoVentasAgrupVen(ostream &sld, rVenta vrVentas[], ushort cVtas, rTotales vrTotales[], ushort &cTotales)
 {
-    ushort vendedorActual, nVentasVendedor;
-    float totalVendedor;
-    cout << "Listado de ventas" << endl;
+    ushort vendedorActual, nVentasVendedor, iTotales, codVenVentMayor;
+    float totalGeneral, vtaMayor = 0;
+    double totalImporteCurVen;
+    int totalItemsCurVen;
+    sld << "Listado (1) ordenado por Codigo de Vendedor con repeticion" << endl;
 
     OrdxBur(vrVentas, cVtas);
-
     for ( int i = 0; i < cVtas; i++)
     {
         if (!vrVentas[i].codVen)
@@ -157,46 +196,86 @@ void ListadoVentasAgrupVen(rVenta vrVentas[], ushort cVtas, rTotales vrTotales[]
         if (vrVentas[i].codVen != vendedorActual)
         {
             nVentasVendedor = 0;
-            totalVendedor = 0;
+            totalImporteCurVen = 0;
+            totalItemsCurVen = 0;
             vendedorActual = vrVentas[i].codVen;
-            cout << Replicate('-',80) << endl;
-            cout << "Cod. Vendedor: " << vendedorActual << endl;
-            EmitirColumnas();
+            sld << Replicate('-',83) << endl;
+            sld << "Cod. Vendedor: " << vendedorActual << endl;
+            EmitirColumnas(sld);
         }
+
         nVentasVendedor++;
-        totalVendedor += vrVentas[i].preUni * vrVentas[i].cant;
-        EmitirVenta(vrVentas[i], nVentasVendedor);
+        totalImporteCurVen += vrVentas[i].preTotal;
+        totalItemsCurVen += vrVentas[i].cant;
+
+        EmitirVenta(sld, vrVentas[i], nVentasVendedor);
+
+        if ((vrVentas[i].preTotal) > vtaMayor)
+        {
+            vtaMayor = vrVentas[i].preTotal;
+            codVenVentMayor = vendedorActual;
+        }
+
         if (vrVentas[i+1].codVen != vendedorActual)
         {
-            cout << setw(74) << "$" << setw(9) << totalVendedor << endl;
-            rTotales rTotalesAux;
-            rTotalesAux.id = vendedorActual;
-            rTotalesAux.itemsTotalVendido = nVentasVendedor;
-            rTotalesAux.importeTotalVendido = totalVendedor;
-            vrTotales[vendedorActual] = rTotalesAux;
+            sld << setw(74) << "$" << setw(9) << totalImporteCurVen << endl;
+            totalGeneral += totalImporteCurVen;
+            AcumularTotales(vrTotales, vendedorActual, totalItemsCurVen, totalImporteCurVen, cTotales);
         }
+    }
+    sld << "Total General: $" << totalGeneral << endl;
+    sld << "Codigo de vendedor con mayor importe: " << codVenVentMayor << endl; //Falla cuando quiere? Por alguan razón y no sé por qué. El debugger se rompe a veces
+}
+
+void ListadoCantTotalxVend(ostream &sld ,rTotales vrTot[], ushort cTotales) {
+    sld << "Listado (2) ordenado decreciente por Cantidad Total de cada Codigo de Vendedor" << endl;
+    OrdxBur(vrTot, cTotales);
+    sld << "Cod. Ven.  Cant. Total" << endl;
+    for (int i = 0; i < cTotales; i++)
+    {
+        sld << right << setw(9) << vrTot[i].id << "  " << vrTot[i].itemsTotalVendido << endl;
+    }
+}
+
+void ListadoImporteTotalxVend(ostream &sld, rTotales vrTot[], ushort cTotales) {
+    sld << "Listado (3) ordenado decreciente por Importe Total de cada Codigo de Vendedor" << endl;
+    OrdxBur(cTotales, vrTot);
+    sld << "Cod. Ven.  Importe Total" << endl;
+    for (int i = 0; i < cTotales; i++)
+    {
+        sld << right << setw(9) << vrTot[i].id << "  " << vrTot[i].importeTotalVendido << endl;
     }
 }
 
 int main(){
     float TotalGralVentas;
-    ushort VendedorVtaMayor, nTotalVentas;
+    ushort VendedorVtaMayor, cVtas, cTotales;
     rVenta vrVentas[MAX_REGS];
     rTotales vrTotales[MAX_VEND];
 
     ifstream VentasAF("VentasFerreteria.txt");
+    ofstream SalidaAF("Sld.txt");
 
-    ProcesarVentas(VentasAF, vrVentas, nTotalVentas);
+    if (!VentasAF)
+    {
+        cout << "No se pudo abrir el archivo de ventas" << endl;
+        return 1;
+    }
+    if (!SalidaAF)
+    {
+        cout << "No se pudo abrir el archivo de salida" << endl;
+        return 1;
+    }
 
-    ListadoVentasAgrupVen(vrVentas, nTotalVentas, vrTotales);
+    ProcesarVentas(VentasAF, vrVentas, cVtas);
 
-    //ofstream SalidaAF("SalidaFerreteria.txt");
-
-    //ExtraerVentas(VentasAF, MAX_REGS, MAX_VENS)
+    ListadoVentasAgrupVen(SalidaAF, vrVentas, cVtas, vrTotales, cTotales);
+    ListadoCantTotalxVend(SalidaAF, vrTotales, cTotales);
+    ListadoImporteTotalxVend(SalidaAF, vrTotales, cTotales);
 
 
     VentasAF.close();
-    //SalidaAF.close();
+    SalidaAF.close();
 
     return 0;
 }
