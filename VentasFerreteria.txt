@@ -1,7 +1,7 @@
-  1   9 destornillador      900.00 20 09 1981
+ 27   9 destornillador      900.00 20 09 1981
   1  26 tornillo            900.00 20 09 1981
 200   3 Espatula Ancha       23.21 10 01 1995
-  1   1 Kit Dremel Minitorno900.00 20 09 1981
+ 44   1 Kit Dremel Minitorno900.00 20 09 1981
 999  56 tornillo             22.34 16 02 2000
 200   1 200kg Durlock       2005.21 10 01 1995
 658  27 arandela            999.56 25 05 1995
