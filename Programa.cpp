@@ -84,7 +84,7 @@ bool LeerVenta(ifstream &Vtas, rVenta & rVen) {
     return true;
 }
 
-void ProcesarVentas(ifstream &VentasAF, rVenta vrVentas[], unsigned short &cVtas )
+void ProcVentas(ifstream &VentasAF, rVenta vrVentas[], unsigned short &cVtas )
 {
     if (!VentasAF)
     {
@@ -282,7 +282,7 @@ int main(){
     ifstream VentasAF("VentasFerreteria.txt");
     ofstream SalidaAF("Sld.txt");
 
-    ProcesarVentas(VentasAF, vrVentas, cantVtas);
+    ProcVentas(VentasAF, vrVentas, cantVtas);
 
     ListadoVtasAgrupVen(SalidaAF, vrVentas, vrTotales, cantVtas, cantVen);
     ListadoCantTot(SalidaAF, vrTotales, cantVen);
