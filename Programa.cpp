@@ -185,7 +185,7 @@ void AcumularTotales(rTotales vrTotales[], ushort codVen, int totalItems, int to
     cTotales++;
 }
 
-void ListadoVentasAgrupVen(ostream &sld, rVenta vrVentas[], rTotales vrTotales[], ushort cantVtas, ushort &cantVen)
+void ListadoVtasAgrupVen(ostream &sld, rVenta vrVentas[], rTotales vrTotales[], ushort cantVtas, ushort &cantVen)
 {
     ushort vendedorActual, nVentasVendedor, codVenVentMayor;
     float totalGeneral, vtaMayor = 0;
@@ -238,7 +238,7 @@ void ListadoVentasAgrupVen(ostream &sld, rVenta vrVentas[], rTotales vrTotales[]
     sld << "Codigo de vendedor con mayor importe: " << codVenVentMayor << endl;
 }
 
-void ListadoCantTotalxVend(ostream &sld ,rTotales vrTot[], ushort cTotales) {
+void ListadoCantTot(ostream &sld ,rTotales vrTot[], ushort cTotales) {
     if (!sld) {
         cout << "No se pudo abrir el archivo de salida" << endl;
         return;
@@ -252,7 +252,7 @@ void ListadoCantTotalxVend(ostream &sld ,rTotales vrTot[], ushort cTotales) {
     }
 }
 
-void ListadoImporteTotalxVend(ostream &sld, rTotales vrTot[], ushort cTotales) {
+void ListadoImpTot(ostream &sld, rTotales vrTot[], ushort cTotales) {
     if (!sld) {
         cout << "No se pudo abrir el archivo de salida" << endl;
         return;
@@ -277,9 +277,9 @@ int main(){
 
     ProcesarVentas(VentasAF, vrVentas, cantVtas);
 
-    ListadoVentasAgrupVen(SalidaAF, vrVentas, vrTotales, cantVtas, cantVen);
-    ListadoCantTotalxVend(SalidaAF, vrTotales, cantVen);
-    ListadoImporteTotalxVend(SalidaAF, vrTotales, cantVen);
+    ListadoVtasAgrupVen(SalidaAF, vrVentas, vrTotales, cantVtas, cantVen);
+    ListadoCantTot(SalidaAF, vrTotales, cantVen);
+    ListadoImpTot(SalidaAF, vrTotales, cantVen);
 
 
     VentasAF.close();
