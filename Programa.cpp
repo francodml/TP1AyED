@@ -159,7 +159,9 @@ void OrdxBur(ushort cTotales, rTotales vrTotales[]) {
 
 void EmitirVenta(ostream &sld, rVenta Venta, ushort i){
     sld << setw(5) << i << " "
-         << setw(4) << Venta.fecha.dia << "/" << setw(2) << Venta.fecha.mes << "/" << setw(4) << Venta.fecha.anio << " "
+         << setw(4) << Venta.fecha.dia << "/"
+            << setw(2) << Venta.fecha.mes << "/"
+            << setw(4) << Venta.fecha.anio << " "
          << setw(6)  << Venta.cant << " "
          << setw(20) << Venta.descrip << " "
          << setw(3) << "$" << setw(8) << Venta.preUni  << " "
