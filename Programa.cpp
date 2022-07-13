@@ -190,8 +190,8 @@ void AcumularTotales(rTotales vrTotales[], ushort codVen, int totalItems, int to
 void ListadoVtasAgrupVen(ostream &sld, rVenta vrVentas[], rTotales vrTotales[], ushort cantVtas, ushort &cantVen)
 {
     ushort vendedorActual, nVentasVendedor, codVenVentMayor;
-    float totalGeneral, vtaMayor = 0;
-    double totalImporteCurVen;
+    double totalGeneral, vtaMayor = 0;
+    float totalImporteCurVen;
     int totalItemsCurVen;
 
     if (!sld) {
@@ -223,14 +223,19 @@ void ListadoVtasAgrupVen(ostream &sld, rVenta vrVentas[], rTotales vrTotales[], 
 
         EmitirVenta(sld, vrVentas[i], nVentasVendedor);
 
-        if ((vrVentas[i].preTotal) > vtaMayor)
+        /*if ((vrVentas[i].preTotal) > vtaMayor)
         {
             vtaMayor = vrVentas[i].preTotal;
             codVenVentMayor = vendedorActual;
-        }
+        }*/
 
         if (vrVentas[i+1].codVen != vendedorActual)
         {
+            if (totalImporteCurVen > vtaMayor)
+            {
+                vtaMayor = totalImporteCurVen;
+                codVenVentMayor = vendedorActual;
+            }
             sld << setw(74) << "$" << setw(9) << totalImporteCurVen << endl;
             totalGeneral += totalImporteCurVen;
             AcumularTotales(vrTotales, vendedorActual, totalItemsCurVen, totalImporteCurVen, cantVen);
