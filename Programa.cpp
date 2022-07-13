@@ -83,10 +83,15 @@ bool LeerVenta(ifstream &Vtas, rVenta & rVen) {
     return true;
 }
 
-void ProcesarVentas(ifstream &VentasIFS, rVenta vrVentas[], unsigned short &cVtas )
+void ProcesarVentas(ifstream &VentasAF, rVenta vrVentas[], unsigned short &cVtas )
 {
-    while(VentasIFS){
-        if(!LeerVenta(VentasIFS, vrVentas[cVtas]))
+    if (!VentasAF)
+    {
+        cout << "No se pudo abrir el archivo de ventas" << endl;
+        return;
+    }
+    while(VentasAF){
+        if(!LeerVenta(VentasAF, vrVentas[cVtas]))
             break;
         cVtas++;
     }
@@ -180,16 +185,22 @@ void AcumularTotales(rTotales vrTotales[], ushort codVen, int totalItems, int to
     cTotales++;
 }
 
-void ListadoVentasAgrupVen(ostream &sld, rVenta vrVentas[], ushort cVtas, rTotales vrTotales[], ushort &cTotales)
+void ListadoVentasAgrupVen(ostream &sld, rVenta vrVentas[], rTotales vrTotales[], ushort cantVtas, ushort &cantVen)
 {
     ushort vendedorActual, nVentasVendedor, codVenVentMayor;
     float totalGeneral, vtaMayor = 0;
     double totalImporteCurVen;
     int totalItemsCurVen;
+
+    if (!sld) {
+        cout << "No se pudo abrir el archivo de salida" << endl;
+        return;
+    }
+
     sld << "Listado (1) ordenado por Codigo de Vendedor con repeticion" << endl;
 
-    OrdxBur(vrVentas, cVtas);
-    for ( int i = 0; i < cVtas; i++)
+    OrdxBur(vrVentas, cantVtas);
+    for ( int i = 0; i < cantVtas; i++)
     {
         if (!vrVentas[i].codVen)
             continue;
@@ -220,14 +231,18 @@ void ListadoVentasAgrupVen(ostream &sld, rVenta vrVentas[], ushort cVtas, rTotal
         {
             sld << setw(74) << "$" << setw(9) << totalImporteCurVen << endl;
             totalGeneral += totalImporteCurVen;
-            AcumularTotales(vrTotales, vendedorActual, totalItemsCurVen, totalImporteCurVen, cTotales);
+            AcumularTotales(vrTotales, vendedorActual, totalItemsCurVen, totalImporteCurVen, cantVen);
         }
     }
     sld << "Total General: $" << totalGeneral << endl;
-    sld << "Codigo de vendedor con mayor importe: " << codVenVentMayor << endl; //Falla cuando quiere? Por alguan razón y no sé por qué. El debugger se rompe a veces
+    sld << "Codigo de vendedor con mayor importe: " << codVenVentMayor << endl;
 }
 
 void ListadoCantTotalxVend(ostream &sld ,rTotales vrTot[], ushort cTotales) {
+    if (!sld) {
+        cout << "No se pudo abrir el archivo de salida" << endl;
+        return;
+    }
     sld << "Listado (2) ordenado decreciente por Cantidad Total de cada Codigo de Vendedor" << endl;
     OrdxBur(vrTot, cTotales);
     sld << "Cod. Ven.  Cant. Total" << endl;
@@ -238,6 +253,10 @@ void ListadoCantTotalxVend(ostream &sld ,rTotales vrTot[], ushort cTotales) {
 }
 
 void ListadoImporteTotalxVend(ostream &sld, rTotales vrTot[], ushort cTotales) {
+    if (!sld) {
+        cout << "No se pudo abrir el archivo de salida" << endl;
+        return;
+    }
     sld << "Listado (3) ordenado decreciente por Importe Total de cada Codigo de Vendedor" << endl;
     OrdxBur(cTotales, vrTot);
     sld << "Cod. Ven.  Importe Total" << endl;
@@ -249,29 +268,18 @@ void ListadoImporteTotalxVend(ostream &sld, rTotales vrTot[], ushort cTotales) {
 
 int main(){
     float TotalGralVentas;
-    ushort VendedorVtaMayor, cVtas = 0, cTotales = 0;
+    ushort VendedorVtaMayor, cantVtas = 0, cantVen = 0;
     rVenta vrVentas[MAX_REGS];
     rTotales vrTotales[MAX_VEND];
 
     ifstream VentasAF("VentasFerreteria.txt");
     ofstream SalidaAF("Sld.txt");
 
-    if (!VentasAF)
-    {
-        cout << "No se pudo abrir el archivo de ventas" << endl;
-        return 1;
-    }
-    if (!SalidaAF)
-    {
-        cout << "No se pudo abrir el archivo de salida" << endl;
-        return 1;
-    }
+    ProcesarVentas(VentasAF, vrVentas, cantVtas);
 
-    ProcesarVentas(VentasAF, vrVentas, cVtas);
-
-    ListadoVentasAgrupVen(SalidaAF, vrVentas, cVtas, vrTotales, cTotales);
-    ListadoCantTotalxVend(SalidaAF, vrTotales, cTotales);
-    ListadoImporteTotalxVend(SalidaAF, vrTotales, cTotales);
+    ListadoVentasAgrupVen(SalidaAF, vrVentas, vrTotales, cantVtas, cantVen);
+    ListadoCantTotalxVend(SalidaAF, vrTotales, cantVen);
+    ListadoImporteTotalxVend(SalidaAF, vrTotales, cantVen);
 
 
     VentasAF.close();
