@@ -10,7 +10,8 @@
     José Brandy Zambrano
 
     Fecha: Julio 2022
-    Comentario: Programa que lee un archivo de texto "VentasFerreteria.Txt" y emite listados en formato de tabla a un archivo de texto
+    Comentario: Programa que lee un archivo de texto "VentasFerreteria.Txt"
+     y emite listados en formato de tabla a un archivo de texto
     Versión: 0
     Curso: K1092MiTN
 */
@@ -97,20 +98,6 @@ void ProcesarVentas(ifstream &VentasAF, rVenta vrVentas[], unsigned short &cVtas
     }
 }
 
-//Intercambio genérico - No utiliza tipos definidos.
-
-/*template <class T>
-
-void Intercambiar(T &v1, T &v2, bool &sorted)
-{
-    T aux;
-    aux = v1;
-    v1 = v2;
-    v2 = aux;
-    sorted = false;
-}
-*/
-
 void IntCmb(rVenta &v1, rVenta &v2, bool &sorted)
 {
     rVenta aux;
@@ -128,55 +115,6 @@ void IntCmb(rTotales &v1, rTotales &v2, bool &sorted)
     v2 = aux;
     sorted = false;
 }
-
-//Apreciese el código genérico comentado. Aún así era una implementación ineficiente
-//dado que aún se utilizaba la sobrecarga de funciones.
-
-/*template <class T>
-
-//Ordenado por Burbuja genérico. *Comparar indica la función de comparación.
-
-void OrdxBurGenerico(T array[], ushort n, bool (*Comparar)(T, T))
-{
-    for (ushort i = 0; i < n - 1; i++)
-    {
-        bool sorted = true;
-        for (ushort j = 0; j < n - i - 1; j++)
-            if (Comparar(array[j], array[j + 1]))
-                Intercambiar(array[j], array[j + 1], sorted);
-
-        if (sorted)
-            break;
-    }
-}
-
-#pragma region Comparadores
-    bool ComparVentas(rVenta v1, rVenta v2) {
-        return v1.codVen > v2.codVen;
-    }
-
-    bool ComparTotalesItems(rTotales v1, rTotales v2) {
-        return v1.itemsTotalVendido < v2.itemsTotalVendido;
-    }
-
-    bool ComparTotalesImportes(rTotales v1, rTotales v2) {
-        return v1.importeTotalVendido < v2.importeTotalVendido;
-    }
-#pragma endregion
-
-
-void OrdxBur(rVenta vrVentas[], ushort cVtas) {
-    OrdxBurGenerico<rVenta>(vrVentas, cVtas, *ComparVentas);
-}
-
-void OrdxBur(rTotales vrTotales[], ushort cTotales) {
-    OrdxBurGenerico<rTotales>(vrTotales, cTotales, *ComparTotalesItems);
-}
-
-void OrdxBur(ushort cTotales, rTotales vrTotales[]) {
-    OrdxBurGenerico<rTotales>(vrTotales, cTotales, *ComparTotalesImportes);
-}
-*/
 
 void OrdxBur(rVenta vrVentas[], ushort cVtas) {
     for (ushort i = 0; i < cVtas - 1; i++)
