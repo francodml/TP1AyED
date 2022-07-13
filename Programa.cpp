@@ -99,9 +99,9 @@ void ProcesarVentas(ifstream &VentasAF, rVenta vrVentas[], unsigned short &cVtas
 
 //Intercambio genérico - No utiliza tipos definidos.
 
-template <class T>
+/*template <class T>
 
-void Intercambiar( T &v1, T &v2, bool &sorted)
+void Intercambiar(T &v1, T &v2, bool &sorted)
 {
     T aux;
     aux = v1;
@@ -109,8 +109,30 @@ void Intercambiar( T &v1, T &v2, bool &sorted)
     v2 = aux;
     sorted = false;
 }
+*/
 
-template <class T>
+void IntCmb(rVenta &v1, rVenta &v2, bool &sorted)
+{
+    rVenta aux;
+    aux = v1;
+    v1 = v2;
+    v2 = aux;
+    sorted = false;
+}
+
+void IntCmb(rTotales &v1, rTotales &v2, bool &sorted)
+{
+    rTotales aux;
+    aux = v1;
+    v1 = v2;
+    v2 = aux;
+    sorted = false;
+}
+
+//Apreciese el código genérico comentado. Aún así era una implementación ineficiente
+//dado que aún se utilizaba la sobrecarga de funciones.
+
+/*template <class T>
 
 //Ordenado por Burbuja genérico. *Comparar indica la función de comparación.
 
@@ -154,6 +176,48 @@ void OrdxBur(rTotales vrTotales[], ushort cTotales) {
 void OrdxBur(ushort cTotales, rTotales vrTotales[]) {
     OrdxBurGenerico<rTotales>(vrTotales, cTotales, *ComparTotalesImportes);
 }
+*/
+
+void OrdxBur(rVenta vrVentas[], ushort cVtas) {
+    for (ushort i = 0; i < cVtas - 1; i++)
+    {
+        bool sorted = true;
+        for (ushort j = 0; j < cVtas - i - 1; j++)
+            if (vrVentas[j].codVen > vrVentas[j + 1].codVen)
+                IntCmb(vrVentas[j], vrVentas[j + 1], sorted);
+
+        if (sorted)
+            break;
+    }
+}
+
+void OrdxBur(rTotales vrTotales[], ushort cTotales) {
+    for (ushort i = 0; i < cTotales - 1; i++)
+    {
+        bool sorted = true;
+        for (ushort j = 0; j < cTotales - i - 1; j++)
+            if (vrTotales[j].itemsTotalVendido < vrTotales[j + 1].itemsTotalVendido)
+                IntCmb(vrTotales[j], vrTotales[j + 1], sorted);
+
+        if (sorted)
+            break;
+    }
+}
+
+
+void OrdxBur(ushort cTotales, rTotales vrTotales[]) {
+    for (ushort i = 0; i < cTotales - 1; i++)
+    {
+        bool sorted = true;
+        for (ushort j = 0; j < cTotales - i - 1; j++)
+            if (vrTotales[j].importeTotalVendido < vrTotales[j + 1].importeTotalVendido)
+                IntCmb(vrTotales[j], vrTotales[j + 1], sorted);
+
+        if (sorted)
+            break;
+    }
+}
+
 
 void EmitirVenta(ostream &sld, rVenta Venta, ushort i){
     sld << setw(5) << i << " "
